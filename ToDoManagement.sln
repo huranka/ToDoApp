@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToDoアプリケーション", "ToDoアプリケーション\ToDoアプリケーション.csproj", "{48A72ECE-9612-427C-B6CE-FA69F512221B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToDoManagement", "ToDoManagement\ToDoManagement.csproj", "{48A72ECE-9612-427C-B6CE-FA69F512221B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskList", "TaskList\TaskList.csproj", "{6E833C09-56DE-42CF-A733-EED87A689F82}"
 EndProject
