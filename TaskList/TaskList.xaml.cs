@@ -62,11 +62,6 @@ namespace TaskList
 
             TextBox textBox = new TextBox();
             textBox.Style = (Style)this.FindResource("DefaultTextBox1");
-            //textBox.HorizontalAlignment = HorizontalAlignment.Left;
-            //textBox.TextWrapping = TextWrapping.Wrap;
-            //textBox.BorderThickness = new Thickness(0);
-            //textBox.Background = Brushes.Transparent;
-            //textBox.Width = 330;
             textBox.Text = "testBox";
             textBox.SelectionChanged += new RoutedEventHandler(TextBox_SelectionChanged);
 
@@ -102,6 +97,27 @@ namespace TaskList
             focus_checkBoxsObject_ = sender;
             focus_textBox_ = null;
         }
+
+        private void StackPanel_CheckBox_Create(out StackPanel stackPanelOut)
+        {
+            StackPanel stackPanel = new StackPanel();
+            stackPanel.VerticalAlignment = VerticalAlignment.Stretch;
+            stackPanel.HorizontalAlignment = HorizontalAlignment.Left;
+            stackPanel.Orientation = Orientation.Horizontal;
+
+            CheckBox checkBox = new CheckBox();
+            checkBox.Style = (Style)FindResource("DefaultStackPanelCheckBox");
+            checkBox.Click += CheckBox_Click;
+            stackPanel.Children.Add(checkBox);
+
+            TextBox textBox = new TextBox();
+            textBox.Style = (Style)FindResource("DefaultTextBox1");
+            textBox.GotFocus += new RoutedEventHandler(TextBox_GotFocus);
+            stackPanel.Children.Add(textBox);
+
+            stackPanelOut = stackPanel;
+        }
+
         private void button_Click_Create_CheckBox(object sender, RoutedEventArgs e)
         {
              var txt = sender.ToString();
@@ -129,20 +145,8 @@ namespace TaskList
                         stack_panel_top_.Children.Insert(focus_number++, textBox_front);
                     }
 
-                    StackPanel stackPanel = new StackPanel();
-                    stackPanel.VerticalAlignment = VerticalAlignment.Stretch;
-                    stackPanel.HorizontalAlignment = HorizontalAlignment.Left;
-                    stackPanel.Orientation = Orientation.Horizontal;
-
-                    CheckBox checkBox = new CheckBox();
-                    checkBox.Style = (Style)FindResource("DefaultStackPanelCheckBox");
-                    checkBox.Click += CheckBox_Click;
-                    stackPanel.Children.Add(checkBox);
-
-                    TextBox textBox = new TextBox();
-                    textBox.Style = (Style)FindResource("DefaultTextBox1");
-                    textBox.GotFocus += new RoutedEventHandler(TextBox_GotFocus);
-                    stackPanel.Children.Add(textBox);
+                    StackPanel stackPanel;
+                    StackPanel_CheckBox_Create(out stackPanel);
 
                     TextBox textBox_back = new TextBox();
                     textBox_back.Style = (Style)this.FindResource("DefaultTextBox1");
@@ -172,21 +176,10 @@ namespace TaskList
 
                     {
                         // フォーカスが合っているチェックボックスの下の行にチェックボックスの行を追加
-                        StackPanel stackPanel = new StackPanel();
-                        stackPanel.HorizontalAlignment = HorizontalAlignment.Left;
-                        stackPanel.VerticalAlignment = VerticalAlignment.Stretch;
-                        stackPanel.Orientation = Orientation.Horizontal;
 
-                        CheckBox checkBox = new CheckBox();
-                        checkBox.Style = (Style)FindResource("DefaultStackPanelCheckBox");
-                        checkBox.Click += CheckBox_Click;
-                        stackPanel.Children.Add(checkBox);
-
-                        TextBox textBox = new TextBox();
-                        textBox.Style = (Style)FindResource("DefaultTextBox1");
-                        textBox.GotFocus += TextBox_GotFocus;
-                        stackPanel.Children.Add(textBox);
-
+                        StackPanel stackPanel;
+                        StackPanel_CheckBox_Create(out stackPanel);
+                        
                         int insertIndex = stack_panel_top_.Children.IndexOf(targetStackPanel) + 1;
                         stack_panel_top_.Children.Insert(insertIndex, stackPanel);
                     }
@@ -277,30 +270,19 @@ namespace TaskList
                         stack_panel_top_.Children.Add(textBox);
                     }
 
-                    var stackPanel = new StackPanel();
-                    stackPanel.VerticalAlignment = VerticalAlignment.Stretch;
-                    stackPanel.HorizontalAlignment = HorizontalAlignment.Left;
-                    stackPanel.Orientation = Orientation.Horizontal;
 
-                    var checkBox = new CheckBox();
-                    checkBox.Style = (Style)FindResource("DefaultStackPanelCheckBox");
-                    checkBox.Click += CheckBox_Click;
-                    stackPanel.Children.Add(checkBox);
+                    StackPanel stackPanel;
+                    StackPanel_CheckBox_Create(out stackPanel);
 
-                    //チェックボックス横のテキストボックス追加
-                    var textBox2 = new TextBox();
-                    textBox2.Style = (Style)this.FindResource("DefaultTextBox1");
-                    textBox2.GotFocus += TextBox_GotFocus;
-                    textBox2.Text = textBox2Data;
-                    stackPanel.Children.Add(textBox2);
+                    ((TextBox)stackPanel.Children[1]).Text = textBox2Data;
                     if (match.Value == checkBoxMsgOn_)
                     {
-                        checkBox.IsChecked = true;
-                        textBox2.TextDecorations = TextDecorations.Strikethrough;
+                        ((CheckBox)stackPanel.Children[0]).IsChecked = true;
+                        ((TextBox)stackPanel.Children[1]).TextDecorations = TextDecorations.Strikethrough;
                     }
                     else
                     {
-                        checkBox.IsChecked = false;
+                        ((CheckBox)stackPanel.Children[0]).IsChecked = false;
                     }
 
                     stack_panel_top_.Children.Add(stackPanel);
