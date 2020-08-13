@@ -23,6 +23,7 @@ namespace TaskList
     public partial class TaskListM : UserControl
     {
         TextBox focus_textBox_ = new TextBox();
+        object focus_checkBoxsObject_ = new object();
         StackPanel stack_panel_top_ = new StackPanel();
 
         static readonly string checkBoxMsgOn_ = "{checkBox On}";
@@ -92,61 +93,111 @@ namespace TaskList
 
         private void TextBox_SelectionChanged(object sender, RoutedEventArgs e)
         {
-            var txt = sender.ToString();
             focus_textBox_ = (TextBox)(sender);
+            focus_checkBoxsObject_ = null;
         }
 
+        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            focus_checkBoxsObject_ = sender;
+            focus_textBox_ = null;
+        }
         private void button_Click_Create_CheckBox(object sender, RoutedEventArgs e)
         {
              var txt = sender.ToString();
             try
             {
-                if (focus_textBox_ == null) return;
+                if (focus_textBox_ == null && focus_checkBoxsObject_== null) return;
+                if (focus_textBox_ != null && focus_checkBoxsObject_ == null)
+                {
+                    // topレベルのテキストボックスにフォーカスが合っている場合
+                    var textMsg = focus_textBox_.Text;
+                    //if (textMsg.Length == 0) return;
 
-                var textMsg = focus_textBox_.Text;
-                if (textMsg.Length == 0) return;
+                    var front_text = textMsg.Substring(0, focus_textBox_.CaretIndex);
+                    var back_text = textMsg.Substring(focus_textBox_.CaretIndex);
 
-                var front_text = textMsg.Substring(0, focus_textBox_.CaretIndex);
-                var back_text = textMsg.Substring(focus_textBox_.CaretIndex);
+                    int focus_number = stack_panel_top_.Children.IndexOf(focus_textBox_);
+                    stack_panel_top_.Children.Remove(focus_textBox_);
 
-                int focus_number = stack_panel_top_.Children.IndexOf(focus_textBox_);
+                    if (textMsg.Length != 0)
+                    {
+                        TextBox textBox_front = new TextBox();
+                        textBox_front.Style = (Style)this.FindResource("DefaultTextBox1");
+                        textBox_front.Text = front_text;
+                        textBox_front.SelectionChanged += new RoutedEventHandler(TextBox_SelectionChanged);
+                        stack_panel_top_.Children.Insert(focus_number++, textBox_front);
+                    }
 
+                    StackPanel stackPanel = new StackPanel();
+                    stackPanel.VerticalAlignment = VerticalAlignment.Stretch;
+                    stackPanel.HorizontalAlignment = HorizontalAlignment.Left;
+                    stackPanel.Orientation = Orientation.Horizontal;
 
-                TextBox textBox_front = new TextBox();
-                textBox_front.Style = (Style)this.FindResource("DefaultTextBox1");
-                textBox_front.Text = front_text;
-                textBox_front.SelectionChanged += new RoutedEventHandler(TextBox_SelectionChanged);
+                    CheckBox checkBox = new CheckBox();
+                    checkBox.Style = (Style)FindResource("DefaultStackPanelCheckBox");
+                    checkBox.Click += CheckBox_Click;
+                    stackPanel.Children.Add(checkBox);
 
+                    TextBox textBox = new TextBox();
+                    textBox.Style = (Style)FindResource("DefaultTextBox1");
+                    textBox.GotFocus += new RoutedEventHandler(TextBox_GotFocus);
+                    stackPanel.Children.Add(textBox);
 
-                StackPanel stackPanel = new StackPanel();
-                stackPanel.VerticalAlignment = VerticalAlignment.Stretch;
-                stackPanel.HorizontalAlignment = HorizontalAlignment.Left;
-                stackPanel.Orientation = Orientation.Horizontal;
+                    TextBox textBox_back = new TextBox();
+                    textBox_back.Style = (Style)this.FindResource("DefaultTextBox1");
+                    textBox_back.Text = back_text;
+                    textBox_back.SelectionChanged += new RoutedEventHandler(TextBox_SelectionChanged);
 
-                CheckBox checkBox = new CheckBox();
-                checkBox.Style = (Style)FindResource("DefaultStackPanelCheckBox");
-                checkBox.Click += CheckBox_Click;
-                stackPanel.Children.Add(checkBox);
+                    stack_panel_top_.Children.Insert(focus_number++, stackPanel);
+                    stack_panel_top_.Children.Insert(focus_number, textBox_back);
 
-                TextBox textBox = new TextBox();
-                textBox.Style = (Style)FindResource("DefaultTextBox1");
-                textBox.SelectionChanged += new RoutedEventHandler(TextBox_SelectionChanged);
-                stackPanel.Children.Add(textBox);
+                    focus_checkBoxsObject_ = null;
+                    focus_textBox_ = textBox_back;
+                }
+                else
+                {
+                    //checkBoxがある行にフォーカスがあたっている場合
+                    StackPanel targetStackPanel = null;
+                    foreach (var element in stack_panel_top_.Children)
+                    {
+                        if (!(element is StackPanel)) continue;
+                        var stackPanel = (StackPanel)element;
+                        if (stackPanel.Children.Contains((UIElement)focus_checkBoxsObject_))
+                        {
+                            targetStackPanel = stackPanel;
+                            break;
+                        }
+                    }
 
-                TextBox textBox_back = new TextBox();
-                textBox_back.Style = (Style)this.FindResource("DefaultTextBox1");
-                textBox_back.Text = back_text;
-                textBox_back.SelectionChanged += new RoutedEventHandler(TextBox_SelectionChanged);
+                    {
+                        // フォーカスが合っているチェックボックスの下の行にチェックボックスの行を追加
+                        StackPanel stackPanel = new StackPanel();
+                        stackPanel.HorizontalAlignment = HorizontalAlignment.Left;
+                        stackPanel.VerticalAlignment = VerticalAlignment.Stretch;
+                        stackPanel.Orientation = Orientation.Horizontal;
 
-                stack_panel_top_.Children.Remove(focus_textBox_);
-                stack_panel_top_.Children.Insert(focus_number, textBox_front);
-                stack_panel_top_.Children.Insert(focus_number + 1, stackPanel);
-                stack_panel_top_.Children.Insert(focus_number + 2, textBox_back);
+                        CheckBox checkBox = new CheckBox();
+                        checkBox.Style = (Style)FindResource("DefaultStackPanelCheckBox");
+                        checkBox.Click += CheckBox_Click;
+                        stackPanel.Children.Add(checkBox);
+
+                        TextBox textBox = new TextBox();
+                        textBox.Style = (Style)FindResource("DefaultTextBox1");
+                        textBox.GotFocus += TextBox_GotFocus;
+                        stackPanel.Children.Add(textBox);
+
+                        int insertIndex = stack_panel_top_.Children.IndexOf(targetStackPanel) + 1;
+                        stack_panel_top_.Children.Insert(insertIndex, stackPanel);
+                    }
+
+                }
 
             } catch (Exception exception) {
                 MessageBox.Show(exception.Message);
             }
         }
+
 
         private void CheckBox_Click(object sender, RoutedEventArgs e)
         {
@@ -168,7 +219,6 @@ namespace TaskList
                 }
 
             }
-
         }
 
         public string GetString()
@@ -223,7 +273,7 @@ namespace TaskList
                         var textBox = new TextBox();
                         textBox.Style = (Style)this.FindResource("DefaultTextBox1");
                         textBox.SelectionChanged += new RoutedEventHandler(TextBox_SelectionChanged);
-                        textBox.Text = data.Substring(0, match.Index);
+                        textBox.Text = data.Substring(prev_end_index, textBoxLength1);
                         stack_panel_top_.Children.Add(textBox);
                     }
 
@@ -240,8 +290,7 @@ namespace TaskList
                     //チェックボックス横のテキストボックス追加
                     var textBox2 = new TextBox();
                     textBox2.Style = (Style)this.FindResource("DefaultTextBox1");
-                    textBox2.SelectionChanged += new RoutedEventHandler(TextBox_SelectionChanged);
-                    textBox2.SelectionChanged += new RoutedEventHandler(TextBox_SelectionChanged);
+                    textBox2.GotFocus += TextBox_GotFocus;
                     textBox2.Text = textBox2Data;
                     stackPanel.Children.Add(textBox2);
                     if (match.Value == checkBoxMsgOn_)
