@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:ToDoアプリケーション"
         xmlns:TaskList="clr-namespace:TaskList;assembly=TaskList" x:Class="ToDoアプリケーション.MainWindow"
         mc:Ignorable="d"
-        Title="ToDoリスト" Height="450" Width="800" Background="Black" Foreground="White">
+        Title="ToDoリスト" Height="450" Width="850" Background="Black" Foreground="White">
     <Window.ContextMenu>
         <ContextMenu>
             <MenuItem Header="タスクリスト追加" Click="MenuItem_TaskListAddClick" />

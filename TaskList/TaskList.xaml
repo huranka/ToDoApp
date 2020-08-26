@@ -23,6 +23,9 @@
                 </StackPanel>
             </ScrollViewer>
             <Button x:Name="button" Content="☑" HorizontalAlignment="Left" Height="25" Margin="33,0,0,0" Width="25" Grid.Row ="1" Background="WhiteSmoke" Click="button_Click_Create_CheckBox"/>
+            <Button x:Name="button2" HorizontalAlignment="Left" Height="25" Margin="83,0,0,0" Width="25" Grid.Row ="1" Background="DarkGray">
+                <TextBox Text="☑" TextDecorations="Strikethrough" Background="Transparent"  BorderThickness="0"/>
+            </Button>
         </Grid>
     </Border>
 </UserControl>

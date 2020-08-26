@@ -48,38 +48,57 @@ namespace TaskList
 
             border.Child = grid;
 
-            ScrollViewer scrollViewer = new ScrollViewer();
-            scrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-            scrollViewer.Height = 200;
+            {
+                // テキスト入力部
+                ScrollViewer scrollViewer = new ScrollViewer();
+                scrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+                scrollViewer.Height = 200;
 
-            Grid.SetRow(scrollViewer,0);
+                Grid.SetRow(scrollViewer, 0);
 
-            stack_panel_top_.HorizontalAlignment = HorizontalAlignment.Left;
-            stack_panel_top_.VerticalAlignment = VerticalAlignment.Top;
-            stack_panel_top_.Width = 350;
+                stack_panel_top_.HorizontalAlignment = HorizontalAlignment.Left;
+                stack_panel_top_.VerticalAlignment = VerticalAlignment.Top;
+                stack_panel_top_.Width = 350;
 
-            scrollViewer.Content = stack_panel_top_;
+                scrollViewer.Content = stack_panel_top_;
 
-            TextBox textBox = new TextBox();
-            textBox.Style = (Style)this.FindResource("DefaultTextBox1");
-            textBox.Text = "testBox";
-            textBox.SelectionChanged += new RoutedEventHandler(TextBox_SelectionChanged);
+                TextBox textBox = new TextBox();
+                textBox.Style = (Style)this.FindResource("DefaultTextBox1");
+                textBox.Text = "testBox";
+                textBox.SelectionChanged += new RoutedEventHandler(TextBox_SelectionChanged);
 
-            stack_panel_top_.Children.Add(textBox);
+                stack_panel_top_.Children.Add(textBox);
+                grid.Children.Add(scrollViewer);
+            }
+            // チェックボックス追加ボタン
+            {
+                Button button = new Button();
+                button.Content = "☑";
+                button.HorizontalAlignment = HorizontalAlignment.Left;
+                button.Height = 25;
+                button.Width = 25;
+                button.Margin = new Thickness(33, 0, 0, 0);
+                button.Background = Brushes.WhiteSmoke;
+                button.Click += new RoutedEventHandler(button_Click_Create_CheckBox);
 
-            Button button = new Button();
-            button.Content = "☑";
-            button.HorizontalAlignment = HorizontalAlignment.Left;
-            button.Height = 25;
-            button.Width = 25;
-            button.Margin = new Thickness(33, 0, 0, 0);
-            button.Background = Brushes.WhiteSmoke;
-            button.Click += new RoutedEventHandler(button_Click_Create_CheckBox);
+                Grid.SetRow(button, 1);
+                grid.Children.Add(button);
+            }
+            //チェックボックス削除ボタン
+            {
+                Button button = new Button();
+                button.Content = "☑";
+                button.HorizontalAlignment = HorizontalAlignment.Left;
+                button.Height = 25;
+                button.Width = 25;
+                button.Margin = new Thickness(83, 0, 0, 0);
+                button.Background = Brushes.DarkGray;
+                button.Click += buttonClick_Delete_CheckBox;
 
-            Grid.SetRow(button, 1);
+                Grid.SetRow(button, 1);
+                grid.Children.Add(button);
 
-            grid.Children.Add(scrollViewer);
-            grid.Children.Add(button);
+            }
 
             this.Content = border;
 
@@ -118,15 +137,62 @@ namespace TaskList
             stackPanelOut = stackPanel;
         }
 
+        private void buttonClick_Delete_CheckBox(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (focus_textBox_ == null && focus_checkBoxsObject_ == null) return;
+                else if (focus_textBox_ != null && focus_checkBoxsObject_ == null) return;
+                else
+                {
+                    // --------- checkBoxがある行にフォーカスがあたっている場合 --------- //
+                    // フォーカス中のtextBoxを含むStackPanelを探す
+                    StackPanel targetStackPanel = null;
+                    foreach (var element in stack_panel_top_.Children)
+                    {
+                        if (!(element is StackPanel)) continue;
+                        var stackPanel = (StackPanel)element;
+                        if (stackPanel.Children.Contains((UIElement)focus_checkBoxsObject_))
+                        {
+                            targetStackPanel = stackPanel;
+                            break;
+                        }
+                    }
+
+                    {
+                        // フォーカスが合っているチェックボックスのスタックパネルを削除
+                        int index = stack_panel_top_.Children.IndexOf(targetStackPanel);
+                        stack_panel_top_.Children.Remove(targetStackPanel);
+
+                        //フォーカス位置の設定　削除オブジェクトの一つ前のオブジェクトを設定。
+                        if (stack_panel_top_.Children[index] is StackPanel)
+                        {
+                            StackPanel stackPanel = (StackPanel)stack_panel_top_.Children[index];
+                            focus_checkBoxsObject_ = stackPanel.Children[1];
+                            focus_textBox_ = null;
+                        } else if ( stack_panel_top_.Children[index] is TextBox)
+                        {
+                            focus_checkBoxsObject_ = null;
+                            focus_textBox_ = (TextBox)stack_panel_top_.Children[index];
+                        }
+                    }
+                    // --------- checkBoxがある行にフォーカスがあたっている場合
+                }
+
+            } catch (Exception exception) {
+                MessageBox.Show(exception.Message);
+            }
+        }
+
         private void button_Click_Create_CheckBox(object sender, RoutedEventArgs e)
         {
-             var txt = sender.ToString();
+            var txt = sender.ToString();
             try
             {
                 if (focus_textBox_ == null && focus_checkBoxsObject_== null) return;
                 if (focus_textBox_ != null && focus_checkBoxsObject_ == null)
                 {
-                    // topレベルのテキストボックスにフォーカスが合っている場合
+                    // --------- topレベルのテキストボックスにフォーカスが合っている場合 --------- //
                     var textMsg = focus_textBox_.Text;
                     //if (textMsg.Length == 0) return;
 
@@ -158,10 +224,12 @@ namespace TaskList
 
                     focus_checkBoxsObject_ = null;
                     focus_textBox_ = textBox_back;
+                    // --------- topレベルのテキストボックスにフォーカスが合っている場合 ---------
                 }
                 else
                 {
-                    //checkBoxがある行にフォーカスがあたっている場合
+                    // --------- checkBoxがある行にフォーカスがあたっている場合 --------- //
+                    // フォーカス中のtextBoxを含むStackPanelを探す
                     StackPanel targetStackPanel = null;
                     foreach (var element in stack_panel_top_.Children)
                     {
@@ -183,7 +251,7 @@ namespace TaskList
                         int insertIndex = stack_panel_top_.Children.IndexOf(targetStackPanel) + 1;
                         stack_panel_top_.Children.Insert(insertIndex, stackPanel);
                     }
-
+                    // --------- checkBoxがある行にフォーカスがあたっている場合 ---------
                 }
 
             } catch (Exception exception) {
@@ -214,6 +282,10 @@ namespace TaskList
             }
         }
 
+        /// <summary>
+        /// TaskList内の文字列一覧を取得
+        /// </summary>
+        /// <returns></returns>
         public string GetString()
         {
             string allMsg = "";
@@ -243,7 +315,10 @@ namespace TaskList
             return allMsg;
         }
 
-        // 文字列に応じて、コントロールをセット
+        /// <summary>
+        /// TaskList内に文字列を設定
+        /// </summary>
+        /// <param name="data"></param>
         public void SetString(string data)
         {
             stack_panel_top_.Children.Clear();
