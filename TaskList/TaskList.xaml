@@ -6,6 +6,11 @@
              xmlns:local="clr-namespace:TaskList"
              mc:Ignorable="d" 
              d:DesignHeight="207.188" d:DesignWidth="360.312">
+    <UserControl.ContextMenu>
+        <ContextMenu>
+            <MenuItem Header="タスクリスト削除" Click="MenuItem_TaskListDeleteClick" />
+        </ContextMenu>
+    </UserControl.ContextMenu>
     <Border CornerRadius="20" Background="Yellow">
         <Grid Margin="10">
             <Grid.RowDefinitions>

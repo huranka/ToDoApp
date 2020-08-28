@@ -15,7 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using TaskList;
 
-namespace ToDoアプリケーション
+namespace ToDoManagement
 {
     /// <summary>
     /// MainWindow.xaml の相互作用ロジック
@@ -39,18 +39,13 @@ namespace ToDoアプリケーション
         {
             var taskList = new TaskList.TaskListM();
             taskList.Margin = new Thickness(3);
-            wrapPanelTop_.Children.Add(taskList);
+            taskList.TaskListDeleteEvent += TaskListDelete;
 
-            //コンテキストメニュー
-            var contextMenu = new ContextMenu();
-            var menuItem = new MenuItem();
-            menuItem.Click += MenuItemClick_TaskListDelete;
-            menuItem.Header = "タスクリスト削除";
-            contextMenu.Items.Add(menuItem);
-            wrapPanelTop_.ContextMenu = contextMenu;
+            wrapPanelTop_.Children.Add(taskList);
         }
 
-        private void MenuItemClick_TaskListDelete(object sender, RoutedEventArgs e)
+
+        public void TaskListDelete(object sender, EventArgs e)
         {
             var taskList = (TaskList.TaskListM)sender;
             wrapPanelTop_.Children.Remove(taskList);
@@ -83,6 +78,7 @@ namespace ToDoアプリケーション
                 var taskList = new TaskList.TaskListM();
                 taskList.Margin = new Thickness(3);
                 taskList.SetString(data);
+                taskList.TaskListDeleteEvent += TaskListDelete;
 
                 wrapPanelTop_.Children.Add(taskList);
             }

@@ -87,13 +87,20 @@ namespace TaskList
             //チェックボックス削除ボタン
             {
                 Button button = new Button();
-                button.Content = "☑";
                 button.HorizontalAlignment = HorizontalAlignment.Left;
                 button.Height = 25;
                 button.Width = 25;
                 button.Margin = new Thickness(83, 0, 0, 0);
                 button.Background = Brushes.DarkGray;
                 button.Click += buttonClick_Delete_CheckBox;
+
+                TextBox textBox = new TextBox();
+                textBox.Text = "☑";
+                textBox.TextDecorations = TextDecorations.Strikethrough;
+                textBox.Background = Brushes.Transparent;
+                textBox.BorderThickness = new Thickness(0);
+
+                button.Content = textBox;
 
                 Grid.SetRow(button, 1);
                 grid.Children.Add(button);
@@ -379,6 +386,12 @@ namespace TaskList
                     break;
                 }
             }
+        }
+
+        public event EventHandler TaskListDeleteEvent;
+        private void MenuItem_TaskListDeleteClick(object sender, RoutedEventArgs e)
+        {
+            TaskListDeleteEvent(this, null);
         }
     }
 }

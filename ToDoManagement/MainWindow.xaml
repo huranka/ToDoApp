@@ -3,8 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ToDoアプリケーション"
-        xmlns:TaskList="clr-namespace:TaskList;assembly=TaskList" x:Class="ToDoアプリケーション.MainWindow"
+        xmlns:local="clr-namespace:ToDoManagement"
+        xmlns:TaskList="clr-namespace:TaskList;assembly=TaskList" x:Class="ToDoManagement.MainWindow"
         mc:Ignorable="d"
         Title="ToDoリスト" Height="450" Width="850" Background="Black" Foreground="White">
     <Window.ContextMenu>
