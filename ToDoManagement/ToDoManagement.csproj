@@ -101,5 +101,11 @@
       <Name>TaskList</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image\addIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image\addIcon2.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

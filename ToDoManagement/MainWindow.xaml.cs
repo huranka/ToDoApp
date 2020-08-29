@@ -67,22 +67,31 @@ namespace ToDoManagement
 
         private void ButtonFileLoad_Click(object sender, RoutedEventArgs e)
         {
-            wrapPanelTop_.Children.Clear();
-
-            var files = Directory.GetFiles(FileControl.topFolderPath_);
-            foreach (var path in files)
+            try
             {
-                string data = "";
-                FileControl.LoadFile(ref data, path);
+                wrapPanelTop_.Children.Clear();
 
-                var taskList = new TaskList.TaskListM();
-                taskList.Margin = new Thickness(3);
-                taskList.SetString(data);
-                taskList.TaskListDeleteEvent += TaskListDelete;
+                if (!Directory.Exists(FileControl.topFolderPath_))
+                {
+                    MessageBox.Show("保存データはありません");
+                    return;
+                }
+                var files = Directory.GetFiles(FileControl.topFolderPath_);
+                foreach (var path in files)
+                {
+                    string data = "";
+                    FileControl.LoadFile(ref data, path);
 
-                wrapPanelTop_.Children.Add(taskList);
+                    var taskList = new TaskList.TaskListM();
+                    taskList.Margin = new Thickness(3);
+                    taskList.SetString(data);
+                    taskList.TaskListDeleteEvent += TaskListDelete;
+
+                    wrapPanelTop_.Children.Add(taskList);
+                }
+            }catch
+            {
             }
-
         }
     }
 }
